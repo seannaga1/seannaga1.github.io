@@ -1,1 +1,138 @@
-Hosted
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@Sean</title>
+    <style>
+        :root {
+            --primary-color: #ffffff;
+            --accent-color: #888888;
+            --bg-dark: #050505;
+            --card-bg: rgba(255, 255, 255, 0.03);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--primary-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Background Glow Effect */
+        .glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+        }
+
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            width: 350px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 10px 0;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .tag {
+            color: var(--accent-color);
+            font-family: monospace;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .bio-text {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #ccc;
+            margin-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+        }
+
+        .socials {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .socials a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.8rem;
+            opacity: 0.5;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .socials a:hover {
+            opacity: 1;
+            text-shadow: 0 0 8px white;
+        }
+
+        /* Typewriter effect for the subheader */
+        .typewriter {
+            overflow: hidden;
+            white-space: nowrap;
+            margin: 0 auto;
+            border-right: 2px solid white;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: white; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow"></div>
+    <div class="container">
+        <div class="tag">/sean</div>
+        <h1>SEAN</h1>
+        <div class="typewriter">
+            <span style="color: #ff4444;">full time skid</span>
+        </div>
+
+        <div class="bio-text">
+            certified source code enthusiast.<br>
+            i mostly just <b>copy paste forsh src</b>.<br>
+            <i>"if it's on github, it's mine."</i>
+        </div>
+        <div class="socials">
+            <a href="#">Discord</a>
+            <a href="#">Github</a>
+            <a href="#">Telegram</a>
+        </div>
+    </div>
+</body>
+</html>
