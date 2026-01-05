@@ -110,7 +110,6 @@ h1 span{color:#ff2f2f}
   gap:14px;
 }
 
-/* VOLUME */
 .volume{
   width:90px;
   appearance:none;
@@ -131,7 +130,7 @@ h1 span{color:#ff2f2f}
 
 <body>
 
-<audio id="audio" src="Music.mp3" playsinline></audio>
+<audio id="audio" src="Music.mp3" playsinline crossorigin="anonymous"></audio>
 
 <button id="enterBtn" class="enter">enter</button>
 
@@ -173,10 +172,19 @@ const left = document.getElementById("left");
 const vol = document.getElementById("vol");
 const muteBtn = document.getElementById("muteBtn");
 
-document.getElementById("enterBtn").onclick = () => {
-  audio.volume = 0.45;
-  vol.value = audio.volume;
+/* 🔊 WEB AUDIO */
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const ctx = new AudioContext();
+const source = ctx.createMediaElementSource(audio);
+const gain = ctx.createGain();
+source.connect(gain).connect(ctx.destination);
+
+document.getElementById("enterBtn").onclick = async () => {
+  await ctx.resume();
+  gain.gain.value = 0.45;
+  vol.value = 0.45;
   audio.play();
+
   document.getElementById("enterBtn").style.display="none";
   document.getElementById("main").classList.remove("hidden");
 };
@@ -191,40 +199,31 @@ audio.ontimeupdate = () => {
   left.textContent = "-" + format(audio.duration - audio.currentTime);
 };
 
-timeline.oninput = () => {
-  audio.currentTime = timeline.value;
-};
+timeline.oninput = () => audio.currentTime = timeline.value;
 
-/* 🔴 VOLUM LIVE – fiecare mișcare */
-function applyVolume(v){
-  audio.volume = v;
-  audio.muted = v == 0;
+/* 🎚️ VOLUM LIVE REAL */
+vol.oninput = () => {
+  gain.gain.value = vol.value;
   updateMuteIcon();
-}
-
-vol.addEventListener("input", () => applyVolume(vol.value));
-vol.addEventListener("pointermove", () => applyVolume(vol.value));
-vol.addEventListener("touchmove", () => applyVolume(vol.value));
+};
 
 function toggle(){
   audio.paused ? audio.play() : audio.pause();
 }
 
 function toggleMute(){
-  audio.muted = !audio.muted;
-  if(audio.muted){
+  if(gain.gain.value > 0){
+    gain.gain.value = 0;
     vol.value = 0;
-    audio.volume = 0;
   } else {
-    if(vol.value == 0) vol.value = 0.45;
-    audio.volume = vol.value;
+    gain.gain.value = 0.45;
+    vol.value = 0.45;
   }
   updateMuteIcon();
 }
 
 function updateMuteIcon(){
-  muteBtn.textContent =
-    (audio.muted || audio.volume === 0) ? "🔇" : "🔊";
+  muteBtn.textContent = gain.gain.value === 0 ? "🔇" : "🔊";
 }
 
 function skip(s){
