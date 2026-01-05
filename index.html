@@ -112,7 +112,7 @@ h1 span{color:#ff2f2f}
 
 /* VOLUME */
 .volume{
-  width:80px;
+  width:90px;
   appearance:none;
   height:3px;
   background:#3a3a3c;
@@ -195,11 +195,16 @@ timeline.oninput = () => {
   audio.currentTime = timeline.value;
 };
 
-vol.addEventListener("input", () => {
-  audio.volume = vol.value;
-  audio.muted = vol.value == 0;
+/* 🔴 VOLUM LIVE – fiecare mișcare */
+function applyVolume(v){
+  audio.volume = v;
+  audio.muted = v == 0;
   updateMuteIcon();
-});
+}
+
+vol.addEventListener("input", () => applyVolume(vol.value));
+vol.addEventListener("pointermove", () => applyVolume(vol.value));
+vol.addEventListener("touchmove", () => applyVolume(vol.value));
 
 function toggle(){
   audio.paused ? audio.play() : audio.pause();
