@@ -10,7 +10,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:-apple-system, BlinkMacSystemFont, system-ui;
+  font-family:-apple-system,BlinkMacSystemFont,system-ui;
 }
 
 body{
@@ -91,7 +91,7 @@ h1 span{color:#ff2f2f}
 }
 
 .controls{
-  margin-top:10px;
+  margin-top:12px;
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -107,7 +107,24 @@ h1 span{color:#ff2f2f}
 .mid{
   display:flex;
   align-items:center;
-  gap:18px;
+  gap:14px;
+}
+
+/* VOLUME SLIDER */
+.volume{
+  width:70px;
+  appearance:none;
+  height:3px;
+  background:#3a3a3c;
+  border-radius:10px;
+}
+
+.volume::-webkit-slider-thumb{
+  appearance:none;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:#ff2f2f;
 }
 </style>
 </head>
@@ -140,6 +157,7 @@ h1 span{color:#ff2f2f}
       <div class="mid">
         <button onclick="toggle()">⏸ / ▶︎</button>
         <button onclick="mute()">🔊</button>
+        <input type="range" class="volume" min="0" max="1" step="0.01" value="0.45" oninput="setVolume(this.value)">
       </div>
 
       <button onclick="skip(10)">10⏩</button>
@@ -154,8 +172,8 @@ const cur = document.getElementById("cur");
 const left = document.getElementById("left");
 
 document.getElementById("enterBtn").onclick = () => {
-  audio.play();
   audio.volume = 0.45;
+  audio.play();
   document.getElementById("enterBtn").style.display="none";
   document.getElementById("main").classList.remove("hidden");
 };
@@ -178,6 +196,11 @@ function toggle(){
 
 function mute(){
   audio.muted = !audio.muted;
+}
+
+function setVolume(v){
+  audio.volume = v;
+  audio.muted = false;
 }
 
 function skip(s){
