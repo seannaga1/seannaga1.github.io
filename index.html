@@ -22,15 +22,12 @@ body{
   justify-content:center;
 }
 
-.screen{
-  text-align:center;
-  transition:0.5s;
+.hidden{
+  display:none;
 }
 
-.hidden{
-  opacity:0;
-  pointer-events:none;
-  position:absolute;
+.container{
+  text-align:center;
 }
 
 h1{
@@ -43,10 +40,10 @@ h1 span{
 }
 
 .socials{
-  margin-top:30px;
+  margin-top:24px;
   display:flex;
   flex-direction:column;
-  gap:12px;
+  gap:10px;
 }
 
 .socials a{
@@ -59,39 +56,68 @@ h1 span{
   color:#ff2f2f;
 }
 
-button{
-  padding:14px 36px;
+.enter-btn{
+  padding:16px 40px;
   border-radius:999px;
   border:1px solid #ff2f2f;
   background:transparent;
   color:#ff2f2f;
-  font-size:1rem;
+  font-size:1.05rem;
   cursor:pointer;
   transition:0.25s;
 }
 
-button:hover{
+.enter-btn:hover{
   background:#ff2f2f;
   color:#000;
 }
 
+/* PLAYER */
 .player{
-  margin-top:35px;
-  width:280px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
+  margin-top:36px;
+  width:320px;
+  background:rgba(20,20,20,0.8);
+  backdrop-filter:blur(10px);
+  border-radius:16px;
+  padding:14px 16px;
+}
+
+.timeline{
+  width:100%;
+  appearance:none;
+  height:4px;
+  background:#333;
+  border-radius:4px;
+  outline:none;
+}
+
+.timeline::-webkit-slider-thumb{
+  appearance:none;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:#ff2f2f;
 }
 
 .controls{
+  margin-top:12px;
   display:flex;
-  gap:12px;
-  justify-content:center;
+  justify-content:space-between;
+  align-items:center;
+  font-size:0.95rem;
 }
 
-input[type=range]{
-  width:100%;
-  accent-color:#ff2f2f;
+.controls button{
+  background:none;
+  border:none;
+  color:#ff2f2f;
+  font-size:1rem;
+  cursor:pointer;
+}
+
+.time{
+  font-size:0.85rem;
+  color:#aaa;
 }
 </style>
 </head>
@@ -100,69 +126,73 @@ input[type=range]{
 
 <audio id="audio" src="Music.mp3"></audio>
 
-<div id="enter" class="screen">
-  <button onclick="enterSite()">enter</button>
+<div id="enter">
+  <button class="enter-btn" onclick="start()">enter</button>
 </div>
 
-<div id="content" class="screen hidden">
-  <h1>Sean<span>.</span></h1>
+<div id="main" class="hidden">
+  <div class="container">
+    <h1>Sean<span>.</span></h1>
 
-  <div class="socials">
-    <a href="https://instagram.com/pycle.xyz" target="_blank">
-      instagram <span>@pycle.xyz</span>
-    </a>
-    <a>
-      discord <span>1n_in</span>
-    </a>
-    <a href="https://github.com/SeAn0032" target="_blank">
-      github <span>SeAn0032</span>
-    </a>
-  </div>
+    <div class="socials">
+      <a href="https://instagram.com/pycle.xyz" target="_blank">instagram <span>@pycle.xyz</span></a>
+      <a>discord <span>1n_in</span></a>
+      <a href="https://github.com/SeAn0032" target="_blank">github <span>SeAn0032</span></a>
+    </div>
 
-  <div class="player">
-    <input type="range" id="timeline" value="0">
-    <div class="controls">
-      <button onclick="togglePlay()">play</button>
-      <button onclick="toggleMute()">mute</button>
+    <div class="player">
+      <input type="range" id="range" class="timeline" value="0">
+      <div class="controls">
+        <button onclick="togglePlay()">▶︎ / ❚❚</button>
+        <div class="time">
+          <span id="current">0:00</span> • <span id="total">0:00</span>
+        </div>
+        <button onclick="toggleMute()">🔊</button>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
 const audio = document.getElementById("audio");
-const timeline = document.getElementById("timeline");
+const range = document.getElementById("range");
+const current = document.getElementById("current");
+const total = document.getElementById("total");
 
-function enterSite(){
+function start(){
   audio.play();
   audio.volume = 0.4;
-
-  document.getElementById("enter").classList.add("hidden");
-  document.getElementById("content").classList.remove("hidden");
+  document.getElementById("enter").style.display="none";
+  document.getElementById("main").classList.remove("hidden");
 }
 
 function togglePlay(){
-  if(audio.paused){
-    audio.play();
-  } else {
-    audio.pause();
-  }
+  audio.paused ? audio.play() : audio.pause();
 }
 
 function toggleMute(){
   audio.muted = !audio.muted;
 }
 
-audio.addEventListener("loadedmetadata", () => {
-  timeline.max = audio.duration;
+audio.addEventListener("loadedmetadata", ()=>{
+  range.max = audio.duration;
+  total.textContent = format(audio.duration);
 });
 
-audio.addEventListener("timeupdate", () => {
-  timeline.value = audio.currentTime;
+audio.addEventListener("timeupdate", ()=>{
+  range.value = audio.currentTime;
+  current.textContent = format(audio.currentTime);
 });
 
-timeline.addEventListener("input", () => {
-  audio.currentTime = timeline.value;
+range.addEventListener("input", ()=>{
+  audio.currentTime = range.value;
 });
+
+function format(t){
+  const m = Math.floor(t / 60);
+  const s = Math.floor(t % 60).toString().padStart(2,"0");
+  return `${m}:${s}`;
+}
 </script>
 
 </body>
