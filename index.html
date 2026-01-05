@@ -131,7 +131,7 @@ h1 span{color:#ff2f2f}
 
 <body>
 
-<audio id="audio" src="Music.mp3"></audio>
+<audio id="audio" src="Music.mp3" playsinline></audio>
 
 <button id="enterBtn" class="enter">enter</button>
 
@@ -145,7 +145,7 @@ h1 span{color:#ff2f2f}
   </div>
 
   <div class="player">
-    <input type="range" id="range" class="timeline" value="0">
+    <input type="range" id="timeline" class="timeline" value="0">
     <div class="times">
       <span id="cur">0:00</span>
       <span id="left">-0:00</span>
@@ -155,7 +155,7 @@ h1 span{color:#ff2f2f}
       <button onclick="skip(-10)">⏪10</button>
 
       <div class="mid">
-        <button id="playBtn" onclick="toggle()">⏸</button>
+        <button onclick="toggle()">⏸</button>
         <button id="muteBtn" onclick="toggleMute()">🔊</button>
         <input id="vol" type="range" class="volume" min="0" max="1" step="0.01">
       </div>
@@ -167,11 +167,11 @@ h1 span{color:#ff2f2f}
 
 <script>
 const audio = document.getElementById("audio");
-const range = document.getElementById("range");
+const timeline = document.getElementById("timeline");
 const cur = document.getElementById("cur");
 const left = document.getElementById("left");
-const muteBtn = document.getElementById("muteBtn");
 const vol = document.getElementById("vol");
+const muteBtn = document.getElementById("muteBtn");
 
 document.getElementById("enterBtn").onclick = () => {
   audio.volume = 0.45;
@@ -182,24 +182,24 @@ document.getElementById("enterBtn").onclick = () => {
 };
 
 audio.onloadedmetadata = () => {
-  range.max = audio.duration;
+  timeline.max = audio.duration;
 };
 
 audio.ontimeupdate = () => {
-  range.value = audio.currentTime;
+  timeline.value = audio.currentTime;
   cur.textContent = format(audio.currentTime);
   left.textContent = "-" + format(audio.duration - audio.currentTime);
 };
 
-range.oninput = () => {
-  audio.currentTime = range.value;
+timeline.oninput = () => {
+  audio.currentTime = timeline.value;
 };
 
-vol.oninput = () => {
+vol.addEventListener("input", () => {
   audio.volume = vol.value;
   audio.muted = vol.value == 0;
   updateMuteIcon();
-};
+});
 
 function toggle(){
   audio.paused ? audio.play() : audio.pause();
@@ -209,6 +209,7 @@ function toggleMute(){
   audio.muted = !audio.muted;
   if(audio.muted){
     vol.value = 0;
+    audio.volume = 0;
   } else {
     if(vol.value == 0) vol.value = 0.45;
     audio.volume = vol.value;
@@ -217,7 +218,8 @@ function toggleMute(){
 }
 
 function updateMuteIcon(){
-  muteBtn.textContent = audio.muted || audio.volume == 0 ? "🔇" : "🔊";
+  muteBtn.textContent =
+    (audio.muted || audio.volume === 0) ? "🔇" : "🔊";
 }
 
 function skip(s){
