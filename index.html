@@ -33,9 +33,7 @@ body{
   font-size:17px;
 }
 
-.container{
-  text-align:center;
-}
+.container{text-align:center}
 
 h1{
   font-size:56px;
@@ -59,19 +57,13 @@ h1 span{color:#ff2f2f}
 
 .socials span{color:#ff2f2f}
 
-/* PLAYER BAR */
+/* PLAYER */
 .player{
   margin-top:36px;
   width:360px;
   background:#1c1c1e;
   border-radius:14px;
   padding:12px 14px;
-}
-
-.top{
-  display:flex;
-  align-items:center;
-  gap:10px;
 }
 
 .timeline{
@@ -109,15 +101,14 @@ h1 span{color:#ff2f2f}
   background:none;
   border:none;
   color:#ff2f2f;
-  font-size:20px;
+  font-size:18px;
 }
 
 .mid{
   display:flex;
   align-items:center;
-  gap:24px;
+  gap:18px;
 }
-
 </style>
 </head>
 
@@ -148,6 +139,7 @@ h1 span{color:#ff2f2f}
 
       <div class="mid">
         <button onclick="toggle()">⏸ / ▶︎</button>
+        <button onclick="mute()">🔊</button>
       </div>
 
       <button onclick="skip(10)">10⏩</button>
@@ -182,6 +174,10 @@ range.oninput = () => audio.currentTime = range.value;
 
 function toggle(){
   audio.paused ? audio.play() : audio.pause();
+}
+
+function mute(){
+  audio.muted = !audio.muted;
 }
 
 function skip(s){
