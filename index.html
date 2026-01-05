@@ -17,42 +17,70 @@ body{
   background:#000;
   color:#fff;
   height:100vh;
+  overflow:hidden;
+  cursor:pointer;
+}
+
+.center{
+  height:100%;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
+#enter{
+  font-size:24px;
+  letter-spacing:2px;
+  opacity:.7;
+  animation:pulse 2.5s infinite;
+}
+
+@keyframes pulse{
+  0%{opacity:.4}
+  50%{opacity:.9}
+  100%{opacity:.4}
+}
+
 .hidden{display:none}
 
-.enter{
-  padding:16px 44px;
-  border-radius:999px;
-  border:1px solid #ff2f2f;
-  background:transparent;
-  color:#ff2f2f;
-  font-size:17px;
+.main{
+  text-align:center;
+  animation:fade 1s ease forwards;
 }
 
-.container{text-align:center}
+@keyframes fade{
+  from{opacity:0; transform:translateY(10px)}
+  to{opacity:1; transform:none}
+}
 
 h1{
-  font-size:56px;
+  font-size:64px;
   font-weight:600;
+  letter-spacing:-1px;
 }
 
-h1 span{color:#ff2f2f}
+h1 span{
+  color:#ff2f2f;
+  text-shadow:0 0 16px rgba(255,47,47,.6);
+}
 
 .socials{
-  margin-top:22px;
+  margin-top:26px;
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:10px;
 }
 
 .socials a{
-  color:#888;
   text-decoration:none;
+  color:#aaa;
   font-size:17px;
+  transition:.25s;
+}
+
+.socials a:hover{
+  color:#fff;
+  transform:translateY(-1px);
 }
 
 .socials span{color:#ff2f2f}
@@ -61,16 +89,23 @@ h1 span{color:#ff2f2f}
 .player{
   margin-top:36px;
   width:360px;
-  background:#1c1c1e;
-  border-radius:14px;
-  padding:12px 14px;
+  background:rgba(28,28,30,.85);
+  backdrop-filter:blur(10px);
+  border-radius:16px;
+  padding:14px;
+  animation:fadeUp 1.2s ease forwards;
+}
+
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(12px)}
+  to{opacity:1; transform:none}
 }
 
 .timeline{
   width:100%;
   appearance:none;
   height:3px;
-  background:#3a3a3c;
+  background:#333;
   border-radius:10px;
 }
 
@@ -86,12 +121,12 @@ h1 span{color:#ff2f2f}
   display:flex;
   justify-content:space-between;
   font-size:12px;
-  color:#aaa;
   margin-top:6px;
+  color:#aaa;
 }
 
 .controls{
-  margin-top:12px;
+  margin-top:14px;
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -114,7 +149,7 @@ h1 span{color:#ff2f2f}
   width:90px;
   appearance:none;
   height:3px;
-  background:#3a3a3c;
+  background:#333;
   border-radius:10px;
 }
 
@@ -122,144 +157,99 @@ h1 span{color:#ff2f2f}
   appearance:none;
   width:12px;
   height:12px;
-  border-radius:50%;
   background:#ff2f2f;
-}
-
-/* VISUALIZER */
-canvas{
-  margin-top:18px;
-  width:360px;
-  height:80px;
+  border-radius:50%;
 }
 </style>
 </head>
 
 <body>
 
-<audio id="audio" src="Music.mp3" playsinline crossorigin="anonymous"></audio>
+<audio id="audio" src="Music.mp3" playsinline></audio>
 
-<button id="enterBtn" class="enter">enter</button>
+<div id="enterScreen" class="center">
+  <div id="enter">click anywhere</div>
+</div>
 
-<div id="main" class="hidden container">
-  <h1>Sean<span>.</span></h1>
+<div id="content" class="hidden center">
+  <div class="main">
+    <h1>Sean<span>.</span></h1>
 
-  <div class="socials">
-    <a href="https://instagram.com/pycle.xyz">instagram <span>@pycle.xyz</span></a>
-    <a>discord <span>1n_in</span></a>
-    <a href="https://github.com/SeAn0032">github <span>SeAn0032</span></a>
-  </div>
-
-  <div class="player">
-    <input type="range" id="timeline" class="timeline" value="0">
-    <div class="times">
-      <span id="cur">0:00</span>
-      <span id="left">-0:00</span>
+    <div class="socials">
+      <a href="https://instagram.com/pycle.xyz">instagram <span>@pycle.xyz</span></a>
+      <a>discord <span>1n_in</span></a>
+      <a href="https://github.com/SeAn0032">github <span>SeAn0032</span></a>
     </div>
 
-    <div class="controls">
-      <button onclick="skip(-10)">⏪10</button>
-
-      <div class="mid">
-        <button onclick="toggle()">⏸</button>
-        <button id="muteBtn" onclick="toggleMute()">🔊</button>
-        <input id="vol" type="range" class="volume" min="0" max="1" step="0.01">
+    <div class="player">
+      <input type="range" id="timeline" class="timeline" value="0">
+      <div class="times">
+        <span id="cur">0:00</span>
+        <span id="left">-0:00</span>
       </div>
 
-      <button onclick="skip(10)">10⏩</button>
+      <div class="controls">
+        <button onclick="skip(-10)">⏪</button>
+        <div class="mid">
+          <button onclick="toggle()">⏸</button>
+          <button id="mute" onclick="mute()">🔊</button>
+          <input id="vol" type="range" class="volume" min="0" max="1" step="0.01">
+        </div>
+        <button onclick="skip(10)">⏩</button>
+      </div>
     </div>
   </div>
-
-  <canvas id="viz" width="360" height="80"></canvas>
 </div>
 
 <script>
-const audio = document.getElementById("audio");
-const timeline = document.getElementById("timeline");
-const cur = document.getElementById("cur");
-const left = document.getElementById("left");
-const vol = document.getElementById("vol");
-const muteBtn = document.getElementById("muteBtn");
-const canvas = document.getElementById("viz");
-const ctx2d = canvas.getContext("2d");
+const audio=document.getElementById("audio");
+const enter=document.getElementById("enterScreen");
+const content=document.getElementById("content");
+const timeline=document.getElementById("timeline");
+const cur=document.getElementById("cur");
+const left=document.getElementById("left");
+const vol=document.getElementById("vol");
+const muteBtn=document.getElementById("mute");
 
-/* AUDIO GRAPH */
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-const ctx = new AudioContext();
-const source = ctx.createMediaElementSource(audio);
-const gain = ctx.createGain();
-const analyser = ctx.createAnalyser();
-
-source.connect(gain).connect(analyser).connect(ctx.destination);
-analyser.fftSize = 256;
-
-const data = new Uint8Array(analyser.frequencyBinCount);
-
-/* START */
-document.getElementById("enterBtn").onclick = async () => {
-  await ctx.resume();
-  gain.gain.value = 0.45;
-  vol.value = 0.45;
-  audio.play();
-
-  document.getElementById("enterBtn").style.display="none";
-  document.getElementById("main").classList.remove("hidden");
-
-  draw();
+enter.onclick=()=>{
+  enter.style.opacity=0;
+  setTimeout(()=>{
+    enter.remove();
+    content.classList.remove("hidden");
+    audio.volume=.45;
+    vol.value=.45;
+    audio.play();
+  },300);
 };
 
-/* PLAYER */
-audio.onloadedmetadata = () => timeline.max = audio.duration;
+audio.onloadedmetadata=()=>timeline.max=audio.duration;
 
-audio.ontimeupdate = () => {
-  timeline.value = audio.currentTime;
-  cur.textContent = fmt(audio.currentTime);
-  left.textContent = "-" + fmt(audio.duration - audio.currentTime);
+audio.ontimeupdate=()=>{
+  timeline.value=audio.currentTime;
+  cur.textContent=time(audio.currentTime);
+  left.textContent="-"+time(audio.duration-audio.currentTime);
 };
 
-timeline.oninput = () => audio.currentTime = timeline.value;
+timeline.oninput=()=>audio.currentTime=timeline.value;
 
-vol.oninput = () => {
-  gain.gain.value = vol.value;
-  muteBtn.textContent = gain.gain.value == 0 ? "🔇" : "🔊";
-};
+function toggle(){audio.paused?audio.play():audio.pause()}
+function skip(s){audio.currentTime+=s}
 
-function toggle(){
-  audio.paused ? audio.play() : audio.pause();
+function mute(){
+  audio.muted=!audio.muted;
+  muteBtn.textContent=audio.muted?"🔇":"🔊";
 }
 
-function toggleMute(){
-  if(gain.gain.value > 0){
-    gain.gain.value = 0;
-    vol.value = 0;
-  }else{
-    gain.gain.value = 0.45;
-    vol.value = 0.45;
-  }
-  muteBtn.textContent = gain.gain.value == 0 ? "🔇" : "🔊";
-}
+vol.oninput=()=>{
+  audio.volume=vol.value;
+  audio.muted=vol.value==0;
+  muteBtn.textContent=audio.muted?"🔇":"🔊";
+};
 
-function skip(s){ audio.currentTime += s; }
-
-function fmt(t){
-  const m = Math.floor(t/60);
-  const s = Math.floor(t%60).toString().padStart(2,"0");
+function time(t){
+  const m=Math.floor(t/60);
+  const s=Math.floor(t%60).toString().padStart(2,"0");
   return `${m}:${s}`;
-}
-
-/* VISUALIZER LOOP */
-function draw(){
-  requestAnimationFrame(draw);
-  analyser.getByteFrequencyData(data);
-
-  ctx2d.clearRect(0,0,360,80);
-  const barW = 360 / data.length;
-
-  for(let i=0;i<data.length;i++){
-    const h = data[i] / 255 * 80;
-    ctx2d.fillStyle = "#ff2f2f";
-    ctx2d.fillRect(i * barW, 80 - h, barW - 1, h);
-  }
 }
 </script>
 
