@@ -110,9 +110,9 @@ h1 span{color:#ff2f2f}
   gap:14px;
 }
 
-/* VOLUME SLIDER */
+/* VOLUME */
 .volume{
-  width:70px;
+  width:80px;
   appearance:none;
   height:3px;
   background:#3a3a3c;
@@ -155,9 +155,9 @@ h1 span{color:#ff2f2f}
       <button onclick="skip(-10)">⏪10</button>
 
       <div class="mid">
-        <button onclick="toggle()">⏸ / ▶︎</button>
-        <button onclick="mute()">🔊</button>
-        <input type="range" class="volume" min="0" max="1" step="0.01" value="0.45" oninput="setVolume(this.value)">
+        <button id="playBtn" onclick="toggle()">⏸</button>
+        <button id="muteBtn" onclick="toggleMute()">🔊</button>
+        <input id="vol" type="range" class="volume" min="0" max="1" step="0.01">
       </div>
 
       <button onclick="skip(10)">10⏩</button>
@@ -170,9 +170,12 @@ const audio = document.getElementById("audio");
 const range = document.getElementById("range");
 const cur = document.getElementById("cur");
 const left = document.getElementById("left");
+const muteBtn = document.getElementById("muteBtn");
+const vol = document.getElementById("vol");
 
 document.getElementById("enterBtn").onclick = () => {
   audio.volume = 0.45;
+  vol.value = audio.volume;
   audio.play();
   document.getElementById("enterBtn").style.display="none";
   document.getElementById("main").classList.remove("hidden");
@@ -188,19 +191,33 @@ audio.ontimeupdate = () => {
   left.textContent = "-" + format(audio.duration - audio.currentTime);
 };
 
-range.oninput = () => audio.currentTime = range.value;
+range.oninput = () => {
+  audio.currentTime = range.value;
+};
+
+vol.oninput = () => {
+  audio.volume = vol.value;
+  audio.muted = vol.value == 0;
+  updateMuteIcon();
+};
 
 function toggle(){
   audio.paused ? audio.play() : audio.pause();
 }
 
-function mute(){
+function toggleMute(){
   audio.muted = !audio.muted;
+  if(audio.muted){
+    vol.value = 0;
+  } else {
+    if(vol.value == 0) vol.value = 0.45;
+    audio.volume = vol.value;
+  }
+  updateMuteIcon();
 }
 
-function setVolume(v){
-  audio.volume = v;
-  audio.muted = false;
+function updateMuteIcon(){
+  muteBtn.textContent = audio.muted || audio.volume == 0 ? "🔇" : "🔊";
 }
 
 function skip(s){
