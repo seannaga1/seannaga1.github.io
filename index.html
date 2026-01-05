@@ -10,20 +10,27 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:system-ui,-apple-system,"Inter",sans-serif;
+  font-family:-apple-system, BlinkMacSystemFont, system-ui;
 }
 
 body{
-  background:radial-gradient(circle at top,#1a1a1a,#000);
-  color:#eaeaea;
+  background:#000;
+  color:#fff;
   height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
-.hidden{
-  display:none;
+.hidden{display:none}
+
+.enter{
+  padding:16px 44px;
+  border-radius:999px;
+  border:1px solid #ff2f2f;
+  background:transparent;
+  color:#ff2f2f;
+  font-size:17px;
 }
 
 .container{
@@ -31,64 +38,48 @@ body{
 }
 
 h1{
-  font-size:4rem;
-  letter-spacing:2px;
+  font-size:56px;
+  font-weight:600;
 }
 
-h1 span{
-  color:#ff2f2f;
-}
+h1 span{color:#ff2f2f}
 
 .socials{
-  margin-top:24px;
+  margin-top:22px;
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:8px;
 }
 
 .socials a{
-  text-decoration:none;
   color:#888;
-  font-size:1.05rem;
+  text-decoration:none;
+  font-size:17px;
 }
 
-.socials a span{
-  color:#ff2f2f;
-}
+.socials span{color:#ff2f2f}
 
-.enter-btn{
-  padding:16px 40px;
-  border-radius:999px;
-  border:1px solid #ff2f2f;
-  background:transparent;
-  color:#ff2f2f;
-  font-size:1.05rem;
-  cursor:pointer;
-  transition:0.25s;
-}
-
-.enter-btn:hover{
-  background:#ff2f2f;
-  color:#000;
-}
-
-/* PLAYER */
+/* PLAYER BAR */
 .player{
   margin-top:36px;
-  width:320px;
-  background:rgba(20,20,20,0.8);
-  backdrop-filter:blur(10px);
-  border-radius:16px;
-  padding:14px 16px;
+  width:360px;
+  background:#1c1c1e;
+  border-radius:14px;
+  padding:12px 14px;
+}
+
+.top{
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
 .timeline{
   width:100%;
   appearance:none;
-  height:4px;
-  background:#333;
-  border-radius:4px;
-  outline:none;
+  height:3px;
+  background:#3a3a3c;
+  border-radius:10px;
 }
 
 .timeline::-webkit-slider-thumb{
@@ -99,26 +90,34 @@ h1 span{
   background:#ff2f2f;
 }
 
+.times{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  color:#aaa;
+  margin-top:6px;
+}
+
 .controls{
-  margin-top:12px;
+  margin-top:10px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  font-size:0.95rem;
 }
 
 .controls button{
   background:none;
   border:none;
   color:#ff2f2f;
-  font-size:1rem;
-  cursor:pointer;
+  font-size:20px;
 }
 
-.time{
-  font-size:0.85rem;
-  color:#aaa;
+.mid{
+  display:flex;
+  align-items:center;
+  gap:24px;
 }
+
 </style>
 </head>
 
@@ -126,29 +125,32 @@ h1 span{
 
 <audio id="audio" src="Music.mp3"></audio>
 
-<div id="enter">
-  <button class="enter-btn" onclick="start()">enter</button>
-</div>
+<button id="enterBtn" class="enter">enter</button>
 
-<div id="main" class="hidden">
-  <div class="container">
-    <h1>Sean<span>.</span></h1>
+<div id="main" class="hidden container">
+  <h1>Sean<span>.</span></h1>
 
-    <div class="socials">
-      <a href="https://instagram.com/pycle.xyz" target="_blank">instagram <span>@pycle.xyz</span></a>
-      <a>discord <span>1n_in</span></a>
-      <a href="https://github.com/SeAn0032" target="_blank">github <span>SeAn0032</span></a>
+  <div class="socials">
+    <a href="https://instagram.com/pycle.xyz">instagram <span>@pycle.xyz</span></a>
+    <a>discord <span>1n_in</span></a>
+    <a href="https://github.com/SeAn0032">github <span>SeAn0032</span></a>
+  </div>
+
+  <div class="player">
+    <input type="range" id="range" class="timeline" value="0">
+    <div class="times">
+      <span id="cur">0:00</span>
+      <span id="left">-0:00</span>
     </div>
 
-    <div class="player">
-      <input type="range" id="range" class="timeline" value="0">
-      <div class="controls">
-        <button onclick="togglePlay()">▶︎ / ❚❚</button>
-        <div class="time">
-          <span id="current">0:00</span> • <span id="total">0:00</span>
-        </div>
-        <button onclick="toggleMute()">🔊</button>
+    <div class="controls">
+      <button onclick="skip(-10)">⏪10</button>
+
+      <div class="mid">
+        <button onclick="toggle()">⏸ / ▶︎</button>
       </div>
+
+      <button onclick="skip(10)">10⏩</button>
     </div>
   </div>
 </div>
@@ -156,37 +158,35 @@ h1 span{
 <script>
 const audio = document.getElementById("audio");
 const range = document.getElementById("range");
-const current = document.getElementById("current");
-const total = document.getElementById("total");
+const cur = document.getElementById("cur");
+const left = document.getElementById("left");
 
-function start(){
+document.getElementById("enterBtn").onclick = () => {
   audio.play();
-  audio.volume = 0.4;
-  document.getElementById("enter").style.display="none";
+  audio.volume = 0.45;
+  document.getElementById("enterBtn").style.display="none";
   document.getElementById("main").classList.remove("hidden");
-}
+};
 
-function togglePlay(){
+audio.onloadedmetadata = () => {
+  range.max = audio.duration;
+};
+
+audio.ontimeupdate = () => {
+  range.value = audio.currentTime;
+  cur.textContent = format(audio.currentTime);
+  left.textContent = "-" + format(audio.duration - audio.currentTime);
+};
+
+range.oninput = () => audio.currentTime = range.value;
+
+function toggle(){
   audio.paused ? audio.play() : audio.pause();
 }
 
-function toggleMute(){
-  audio.muted = !audio.muted;
+function skip(s){
+  audio.currentTime += s;
 }
-
-audio.addEventListener("loadedmetadata", ()=>{
-  range.max = audio.duration;
-  total.textContent = format(audio.duration);
-});
-
-audio.addEventListener("timeupdate", ()=>{
-  range.value = audio.currentTime;
-  current.textContent = format(audio.currentTime);
-});
-
-range.addEventListener("input", ()=>{
-  audio.currentTime = range.value;
-});
 
 function format(t){
   const m = Math.floor(t / 60);
