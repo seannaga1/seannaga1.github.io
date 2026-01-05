@@ -24,7 +24,7 @@ body{
 
 .screen{
   text-align:center;
-  transition:0.6s ease;
+  transition:0.5s;
 }
 
 .hidden{
@@ -42,9 +42,25 @@ h1 span{
   color:#ff2f2f;
 }
 
-button{
+.socials{
   margin-top:30px;
-  padding:14px 38px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.socials a{
+  text-decoration:none;
+  color:#888;
+  font-size:1.05rem;
+}
+
+.socials a span{
+  color:#ff2f2f;
+}
+
+button{
+  padding:14px 36px;
   border-radius:999px;
   border:1px solid #ff2f2f;
   background:transparent;
@@ -59,35 +75,30 @@ button:hover{
   color:#000;
 }
 
-.socials{
+.player{
   margin-top:35px;
+  width:280px;
   display:flex;
   flex-direction:column;
   gap:12px;
-  font-size:1.1rem;
 }
 
-.socials a{
-  text-decoration:none;
-  color:#888;
-  transition:0.25s;
+.controls{
+  display:flex;
+  gap:12px;
+  justify-content:center;
 }
 
-.socials a span{
-  color:#ff2f2f;
-}
-
-.socials a:hover{
-  color:#fff;
+input[type=range]{
+  width:100%;
+  accent-color:#ff2f2f;
 }
 </style>
 </head>
 
 <body>
 
-<audio id="music" playsinline>
-  <source src="Music.mp3" type="audio/mpeg">
-</audio>
+<audio id="audio" src="Music.mp3"></audio>
 
 <div id="enter" class="screen">
   <button onclick="enterSite()">enter</button>
@@ -107,20 +118,51 @@ button:hover{
       github <span>SeAn0032</span>
     </a>
   </div>
+
+  <div class="player">
+    <input type="range" id="timeline" value="0">
+    <div class="controls">
+      <button onclick="togglePlay()">play</button>
+      <button onclick="toggleMute()">mute</button>
+    </div>
+  </div>
 </div>
 
 <script>
+const audio = document.getElementById("audio");
+const timeline = document.getElementById("timeline");
+
 function enterSite(){
-  const audio = document.getElementById("music");
-  audio.muted = true;
-  audio.play().then(()=>{
-    audio.muted = false;
-    audio.volume = 0.4;
-  });
+  audio.play();
+  audio.volume = 0.4;
 
   document.getElementById("enter").classList.add("hidden");
   document.getElementById("content").classList.remove("hidden");
 }
+
+function togglePlay(){
+  if(audio.paused){
+    audio.play();
+  } else {
+    audio.pause();
+  }
+}
+
+function toggleMute(){
+  audio.muted = !audio.muted;
+}
+
+audio.addEventListener("loadedmetadata", () => {
+  timeline.max = audio.duration;
+});
+
+audio.addEventListener("timeupdate", () => {
+  timeline.value = audio.currentTime;
+});
+
+timeline.addEventListener("input", () => {
+  audio.currentTime = timeline.value;
+});
 </script>
 
 </body>
