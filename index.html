@@ -3,330 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SEAN // guns lol</title>
+<title>Sean</title>
 
 <style>
 :root {
-  --bg: #0a0a0a;
-  --panel: #121212;
-  --accent: #ff3030;
-  --text: #eaeaea;
-  --muted: #9a9a9a;
+  --bg:#0b0b0b;
+  --accent:#ff2f2f;
+  --text:#eaeaea;
+  --muted:#8a8a8a;
 }
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:system-ui,-apple-system,"Inter",sans-serif;
 }
 
 body {
-  background: radial-gradient(circle at top, #161616, #000);
-  color: var(--text);
-  line-height: 1.6;
+  background:radial-gradient(circle at top,#171717,#000);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-/* HERO */
-.hero {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 40px 20px;
+.container {
+  text-align:center;
 }
 
-.hero h1 {
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  letter-spacing: 3px;
+h1 {
+  font-size:clamp(3rem,7vw,4.5rem);
+  letter-spacing:3px;
 }
 
-.hero span {
-  color: var(--accent);
+h1 span {
+  color:var(--accent);
 }
 
-.hero p {
-  margin-top: 15px;
-  max-width: 650px;
-  opacity: 0.8;
-  font-size: 1.1rem;
+button {
+  margin-top:32px;
+  padding:14px 32px;
+  border-radius:999px;
+  border:1px solid var(--accent);
+  background:transparent;
+  color:var(--accent);
+  font-size:0.95rem;
+  cursor:pointer;
+  transition:0.25s;
 }
 
-.scroll {
-  margin-top: 50px;
-  opacity: 0.5;
-  font-size: 0.9rem;
+button:hover {
+  background:var(--accent);
+  color:#000;
 }
 
-/* SECTIONS */
-section {
-  padding: 80px 20px;
-  max-width: 1200px;
-  margin: auto;
+.socials {
+  margin-top:50px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  font-size:1.05rem;
 }
 
-.section-title {
-  font-size: 2.2rem;
-  margin-bottom: 30px;
-  color: var(--accent);
-  letter-spacing: 1px;
+.socials a {
+  text-decoration:none;
+  color:var(--muted);
+  transition:0.25s;
 }
 
-.section-desc {
-  max-width: 700px;
-  color: var(--muted);
-  margin-bottom: 40px;
+.socials a span {
+  color:var(--accent);
 }
 
-/* GRID */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 24px;
+.socials a:hover {
+  color:var(--text);
 }
 
-/* CARD */
-.card {
-  background: linear-gradient(180deg, #151515, #0d0d0d);
-  border: 1px solid #222;
-  border-radius: 16px;
-  padding: 24px;
-  transition: 0.25s ease;
-  position: relative;
-  overflow: hidden;
+.player {
+  position:fixed;
+  bottom:18px;
+  right:18px;
+  font-size:0.8rem;
+  opacity:0.45;
+  display:none;
 }
 
-.card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, transparent, rgba(255,48,48,0.18), transparent);
-  opacity: 0;
-  transition: 0.25s;
-}
-
-.card:hover::after {
-  opacity: 1;
-}
-
-.card:hover {
-  transform: translateY(-8px);
-  border-color: var(--accent);
-}
-
-.card h3 {
-  color: var(--accent);
-  margin-bottom: 10px;
-}
-
-.card ul {
-  list-style: none;
-}
-
-.card ul li {
-  margin-bottom: 6px;
-  opacity: 0.9;
-}
-
-/* TIMELINE */
-.timeline {
-  border-left: 2px solid #222;
-  padding-left: 25px;
-}
-
-.event {
-  margin-bottom: 30px;
-  position: relative;
-}
-
-.event::before {
-  content: "";
-  width: 12px;
-  height: 12px;
-  background: var(--accent);
-  border-radius: 50%;
-  position: absolute;
-  left: -32px;
-  top: 6px;
-}
-
-.event h4 {
-  color: var(--accent);
-  margin-bottom: 6px;
-}
-
-/* QUOTE */
-.quote {
-  text-align: center;
-  font-size: 1.6rem;
-  font-weight: 600;
-  padding: 70px 20px;
-  color: var(--accent);
-  text-shadow: 0 0 18px rgba(255,48,48,0.35);
-}
-
-/* FOOTER */
-footer {
-  text-align: center;
-  padding: 40px 20px;
-  font-size: 0.85rem;
-  opacity: 0.5;
-}
-
-/* SMALL FLEX */
-.tags span {
-  display: inline-block;
-  margin: 6px 6px 0 0;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(255,48,48,0.15);
-  color: var(--accent);
-  font-size: 0.8rem;
+.player span {
+  color:var(--accent);
 }
 </style>
 </head>
 
 <body>
 
-<!-- HERO -->
-<div class="hero">
-  <h1>SEAN <span>// GUNS LOL</span></h1>
-  <p>
-    not a brand • not a company • just me  
-    building random things, breaking limits, and enjoying controlled chaos
-  </p>
-  <div class="scroll">scroll ↓</div>
+<audio id="music" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<div class="player" id="player">
+  now playing <span>music</span>
 </div>
 
-<!-- ABOUT -->
-<section>
-  <div class="section-title">ABOUT ME</div>
-  <div class="section-desc">
-    This page exists just because it can.  
-    No deep reason. No cringe motivation speech.  
-    Just a digital corner with personality.
+<div class="container">
+  <h1>Sean<span>.</span></h1>
+
+  <button onclick="startMusic()">enter</button>
+
+  <div class="socials">
+    <a href="https://instagram.com/pycle.xyz" target="_blank">
+      instagram <span>@pycle.xyz</span>
+    </a>
+    <a>
+      discord <span>1n_in</span>
+    </a>
+    <a href="https://github.com/SeAn0032" target="_blank">
+      github <span>SeAn0032</span>
+    </a>
   </div>
-
-  <div class="grid">
-    <div class="card">
-      <h3>Mindset</h3>
-      <ul>
-        <li>• do it if it’s fun</li>
-        <li>• clean > flashy</li>
-        <li>• chaos but organized</li>
-        <li>• learning by breaking</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3>Aesthetic</h3>
-      <ul>
-        <li>• dark UI</li>
-        <li>• red accents</li>
-        <li>• simple layouts</li>
-        <li>• no unnecessary clutter</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3>Rules</h3>
-      <ul>
-        <li>• no rules actually</li>
-        <li>• vibes > perfection</li>
-        <li>• experiment first</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- PROJECTS -->
-<section>
-  <div class="section-title">PROJECTS & IDEAS</div>
-  <div class="section-desc">
-    Random stuff I work on when motivation hits at 2AM.
-  </div>
-
-  <div class="grid">
-    <div class="card">
-      <h3>Web</h3>
-      <ul>
-        <li>• personal pages</li>
-        <li>• GitHub Pages experiments</li>
-        <li>• CSS for no reason</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3>Code</h3>
-      <ul>
-        <li>• scripts</li>
-        <li>• small tools</li>
-        <li>• testing ideas</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3>Future</h3>
-      <ul>
-        <li>• bigger projects</li>
-        <li>• cleaner designs</li>
-        <li>• domain maybe</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- TIMELINE -->
-<section>
-  <div class="section-title">TIMELINE</div>
-  <div class="timeline">
-    <div class="event">
-      <h4>Phase 1</h4>
-      <p>Messing around, learning basics, breaking stuff.</p>
-    </div>
-    <div class="event">
-      <h4>Phase 2</h4>
-      <p>Actually understanding what I’m doing.</p>
-    </div>
-    <div class="event">
-      <h4>Now</h4>
-      <p>Doing whatever feels fun and looks good.</p>
-    </div>
-  </div>
-</section>
-
-<!-- QUOTE -->
-<div class="quote">
-  “built different, powered by curiosity”
 </div>
 
-<!-- CONTACT -->
-<section>
-  <div class="section-title">CONNECT</div>
-  <div class="section-desc">
-    No fake networking, just places I exist.
-  </div>
-
-  <div class="card">
-    <ul>
-      <li>• GitHub: seannaga1</li>
-      <li>• Discord: yourtag</li>
-      <li>• more coming soon</li>
-    </ul>
-    <div class="tags">
-      <span>dark-ui</span>
-      <span>guns-lol</span>
-      <span>personal</span>
-      <span>github-pages</span>
-    </div>
-  </div>
-</section>
-
-<footer>
-  © 2026 — made for fun, kept simple
-</footer>
+<script>
+function startMusic(){
+  const a=document.getElementById("music");
+  const p=document.getElementById("player");
+  a.volume=0.35;
+  a.play();
+  p.style.display="block";
+}
+</script>
 
 </body>
 </html>
