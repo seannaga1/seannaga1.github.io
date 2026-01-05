@@ -29,15 +29,14 @@ body{
 }
 
 #enter{
-  font-size:24px;
+  opacity:.8;
   letter-spacing:2px;
-  opacity:.7;
   animation:pulse 2.5s infinite;
 }
 
 @keyframes pulse{
   0%{opacity:.4}
-  50%{opacity:.9}
+  50%{opacity:1}
   100%{opacity:.4}
 }
 
@@ -45,10 +44,10 @@ body{
 
 .main{
   text-align:center;
-  animation:fade 1s ease forwards;
+  animation:fadeIn 1s ease forwards;
 }
 
-@keyframes fade{
+@keyframes fadeIn{
   from{opacity:0; transform:translateY(10px)}
   to{opacity:1; transform:none}
 }
@@ -56,7 +55,6 @@ body{
 h1{
   font-size:64px;
   font-weight:600;
-  letter-spacing:-1px;
 }
 
 h1 span{
@@ -64,8 +62,14 @@ h1 span{
   text-shadow:0 0 16px rgba(255,47,47,.6);
 }
 
+#statusEmoji{
+  margin-top:8px;
+  font-size:20px;
+  opacity:.75;
+}
+
 .socials{
-  margin-top:26px;
+  margin-top:24px;
   display:flex;
   flex-direction:column;
   gap:10px;
@@ -87,18 +91,12 @@ h1 span{
 
 /* PLAYER */
 .player{
-  margin-top:36px;
+  margin-top:32px;
   width:360px;
-  background:rgba(28,28,30,.85);
+  background:rgba(28,28,30,.9);
   backdrop-filter:blur(10px);
   border-radius:16px;
   padding:14px;
-  animation:fadeUp 1.2s ease forwards;
-}
-
-@keyframes fadeUp{
-  from{opacity:0; transform:translateY(12px)}
-  to{opacity:1; transform:none}
 }
 
 .timeline{
@@ -160,12 +158,19 @@ h1 span{
   background:#ff2f2f;
   border-radius:50%;
 }
+
+/* VISUALIZER */
+canvas{
+  margin-top:16px;
+  width:360px;
+  height:70px;
+}
 </style>
 </head>
 
 <body>
 
-<audio id="audio" src="Music.mp3" playsinline></audio>
+<audio id="audio" src="Music.mp3" playsinline crossorigin="anonymous"></audio>
 
 <div id="enterScreen" class="center">
   <div id="enter">click anywhere</div>
@@ -174,6 +179,7 @@ h1 span{
 <div id="content" class="hidden center">
   <div class="main">
     <h1>Sean<span>.</span></h1>
+    <div id="statusEmoji">▶️</div>
 
     <div class="socials">
       <a href="https://instagram.com/pycle.xyz">instagram <span>@pycle.xyz</span></a>
@@ -191,64 +197,129 @@ h1 span{
       <div class="controls">
         <button onclick="skip(-10)">⏪</button>
         <div class="mid">
-          <button onclick="toggle()">⏸</button>
-          <button id="mute" onclick="mute()">🔊</button>
+          <button onclick="togglePlay()">⏯</button>
+          <button onclick="toggleMute()" id="muteBtn">🔊</button>
           <input id="vol" type="range" class="volume" min="0" max="1" step="0.01">
         </div>
         <button onclick="skip(10)">⏩</button>
       </div>
     </div>
+
+    <canvas id="viz" width="360" height="70"></canvas>
   </div>
 </div>
 
 <script>
-const audio=document.getElementById("audio");
-const enter=document.getElementById("enterScreen");
-const content=document.getElementById("content");
-const timeline=document.getElementById("timeline");
-const cur=document.getElementById("cur");
-const left=document.getElementById("left");
-const vol=document.getElementById("vol");
-const muteBtn=document.getElementById("mute");
+const audio = document.getElementById("audio");
+const enterScreen = document.getElementById("enterScreen");
+const content = document.getElementById("content");
+const statusEmoji = document.getElementById("statusEmoji");
+const timeline = document.getElementById("timeline");
+const cur = document.getElementById("cur");
+const left = document.getElementById("left");
+const vol = document.getElementById("vol");
+const muteBtn = document.getElementById("muteBtn");
+const canvas = document.getElementById("viz");
+const c = canvas.getContext("2d");
 
-enter.onclick=()=>{
-  enter.style.opacity=0;
-  setTimeout(()=>{
-    enter.remove();
-    content.classList.remove("hidden");
-    audio.volume=.45;
-    vol.value=.45;
+/* WEB AUDIO */
+const AC = window.AudioContext || window.webkitAudioContext;
+const ctx = new AC();
+const source = ctx.createMediaElementSource(audio);
+const gain = ctx.createGain();
+const analyser = ctx.createAnalyser();
+
+source.connect(gain).connect(analyser).connect(ctx.destination);
+analyser.fftSize = 256;
+const data = new Uint8Array(analyser.frequencyBinCount);
+
+/* ENTER */
+enterScreen.onclick = async () => {
+  await ctx.resume();
+  gain.gain.value = 0.45;
+  vol.value = 0.45;
+  audio.play();
+
+  enterScreen.remove();
+  content.classList.remove("hidden");
+  updateStatus();
+  draw();
+};
+
+/* PLAYER LOGIC */
+audio.onloadedmetadata = () => timeline.max = audio.duration;
+
+audio.ontimeupdate = () => {
+  timeline.value = audio.currentTime;
+  cur.textContent = fmt(audio.currentTime);
+  left.textContent = "-" + fmt(audio.duration - audio.currentTime);
+};
+
+audio.onended = () => {
+  statusEmoji.textContent = "▶️";
+};
+
+timeline.oninput = () => audio.currentTime = timeline.value;
+
+vol.oninput = () => {
+  gain.gain.value = vol.value;
+  updateStatus();
+};
+
+function togglePlay(){
+  if(audio.paused){
     audio.play();
-  },300);
-};
-
-audio.onloadedmetadata=()=>timeline.max=audio.duration;
-
-audio.ontimeupdate=()=>{
-  timeline.value=audio.currentTime;
-  cur.textContent=time(audio.currentTime);
-  left.textContent="-"+time(audio.duration-audio.currentTime);
-};
-
-timeline.oninput=()=>audio.currentTime=timeline.value;
-
-function toggle(){audio.paused?audio.play():audio.pause()}
-function skip(s){audio.currentTime+=s}
-
-function mute(){
-  audio.muted=!audio.muted;
-  muteBtn.textContent=audio.muted?"🔇":"🔊";
+  }else{
+    audio.pause();
+  }
+  updateStatus();
 }
 
-vol.oninput=()=>{
-  audio.volume=vol.value;
-  audio.muted=vol.value==0;
-  muteBtn.textContent=audio.muted?"🔇":"🔊";
-};
+function toggleMute(){
+  if(gain.gain.value > 0){
+    gain.gain.value = 0;
+    vol.value = 0;
+  }else{
+    gain.gain.value = 0.45;
+    vol.value = 0.45;
+  }
+  updateStatus();
+}
 
-function time(t){
-  const m=Math.floor(t/60);
-  const s=Math.floor(t%60).toString().padStart(2,"0");
+function skip(s){
+  audio.currentTime += s;
+}
+
+/* STATUS EMOJI LOGIC (CORE RULE) */
+function updateStatus(){
+  if(audio.ended || audio.currentTime === 0 && audio.paused){
+    statusEmoji.textContent = "▶️";
+  }else if(audio.paused){
+    statusEmoji.textContent = "⏸️";
+  }else if(gain.gain.value === 0){
+    statusEmoji.textContent = "🔇";
+  }else{
+    statusEmoji.textContent = "🔊";
+  }
+}
+
+/* VISUALIZER */
+function draw(){
+  requestAnimationFrame(draw);
+  analyser.getByteFrequencyData(data);
+  c.clearRect(0,0,360,70);
+
+  const barW = 360 / data.length;
+  for(let i=0;i<data.length;i++){
+    const h = data[i] / 255 * 70;
+    c.fillStyle = "#ff2f2f";
+    c.fillRect(i*barW, 70-h, barW-1, h);
+  }
+}
+
+function fmt(t){
+  const m = Math.floor(t/60);
+  const s = Math.floor(t%60).toString().padStart(2,"0");
   return `${m}:${s}`;
 }
 </script>
