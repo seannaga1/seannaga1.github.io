@@ -125,6 +125,13 @@ h1 span{color:#ff2f2f}
   border-radius:50%;
   background:#ff2f2f;
 }
+
+/* VISUALIZER */
+canvas{
+  margin-top:18px;
+  width:360px;
+  height:80px;
+}
 </style>
 </head>
 
@@ -162,6 +169,8 @@ h1 span{color:#ff2f2f}
       <button onclick="skip(10)">10⏩</button>
     </div>
   </div>
+
+  <canvas id="viz" width="360" height="80"></canvas>
 </div>
 
 <script>
@@ -171,14 +180,22 @@ const cur = document.getElementById("cur");
 const left = document.getElementById("left");
 const vol = document.getElementById("vol");
 const muteBtn = document.getElementById("muteBtn");
+const canvas = document.getElementById("viz");
+const ctx2d = canvas.getContext("2d");
 
-/* 🔊 WEB AUDIO */
+/* AUDIO GRAPH */
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const ctx = new AudioContext();
 const source = ctx.createMediaElementSource(audio);
 const gain = ctx.createGain();
-source.connect(gain).connect(ctx.destination);
+const analyser = ctx.createAnalyser();
 
+source.connect(gain).connect(analyser).connect(ctx.destination);
+analyser.fftSize = 256;
+
+const data = new Uint8Array(analyser.frequencyBinCount);
+
+/* START */
 document.getElementById("enterBtn").onclick = async () => {
   await ctx.resume();
   gain.gain.value = 0.45;
@@ -187,24 +204,24 @@ document.getElementById("enterBtn").onclick = async () => {
 
   document.getElementById("enterBtn").style.display="none";
   document.getElementById("main").classList.remove("hidden");
+
+  draw();
 };
 
-audio.onloadedmetadata = () => {
-  timeline.max = audio.duration;
-};
+/* PLAYER */
+audio.onloadedmetadata = () => timeline.max = audio.duration;
 
 audio.ontimeupdate = () => {
   timeline.value = audio.currentTime;
-  cur.textContent = format(audio.currentTime);
-  left.textContent = "-" + format(audio.duration - audio.currentTime);
+  cur.textContent = fmt(audio.currentTime);
+  left.textContent = "-" + fmt(audio.duration - audio.currentTime);
 };
 
 timeline.oninput = () => audio.currentTime = timeline.value;
 
-/* 🎚️ VOLUM LIVE REAL */
 vol.oninput = () => {
   gain.gain.value = vol.value;
-  updateMuteIcon();
+  muteBtn.textContent = gain.gain.value == 0 ? "🔇" : "🔊";
 };
 
 function toggle(){
@@ -215,25 +232,34 @@ function toggleMute(){
   if(gain.gain.value > 0){
     gain.gain.value = 0;
     vol.value = 0;
-  } else {
+  }else{
     gain.gain.value = 0.45;
     vol.value = 0.45;
   }
-  updateMuteIcon();
+  muteBtn.textContent = gain.gain.value == 0 ? "🔇" : "🔊";
 }
 
-function updateMuteIcon(){
-  muteBtn.textContent = gain.gain.value === 0 ? "🔇" : "🔊";
-}
+function skip(s){ audio.currentTime += s; }
 
-function skip(s){
-  audio.currentTime += s;
-}
-
-function format(t){
-  const m = Math.floor(t / 60);
-  const s = Math.floor(t % 60).toString().padStart(2,"0");
+function fmt(t){
+  const m = Math.floor(t/60);
+  const s = Math.floor(t%60).toString().padStart(2,"0");
   return `${m}:${s}`;
+}
+
+/* VISUALIZER LOOP */
+function draw(){
+  requestAnimationFrame(draw);
+  analyser.getByteFrequencyData(data);
+
+  ctx2d.clearRect(0,0,360,80);
+  const barW = 360 / data.length;
+
+  for(let i=0;i<data.length;i++){
+    const h = data[i] / 255 * 80;
+    ctx2d.fillStyle = "#ff2f2f";
+    ctx2d.fillRect(i * barW, 80 - h, barW - 1, h);
+  }
 }
 </script>
 
