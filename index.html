@@ -6,110 +6,95 @@
 <title>Sean</title>
 
 <style>
-:root {
-  --bg:#0b0b0b;
-  --accent:#ff2f2f;
-  --text:#eaeaea;
-  --muted:#8a8a8a;
-}
-
-* {
+*{
   margin:0;
   padding:0;
   box-sizing:border-box;
   font-family:system-ui,-apple-system,"Inter",sans-serif;
 }
 
-body {
-  background:radial-gradient(circle at top,#171717,#000);
-  color:var(--text);
-  min-height:100vh;
+body{
+  background:radial-gradient(circle at top,#1a1a1a,#000);
+  color:#eaeaea;
+  height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
-.container {
+.screen{
   text-align:center;
+  transition:0.6s ease;
 }
 
-h1 {
-  font-size:clamp(3rem,7vw,4.5rem);
-  letter-spacing:3px;
+.hidden{
+  opacity:0;
+  pointer-events:none;
+  position:absolute;
 }
 
-h1 span {
-  color:var(--accent);
+h1{
+  font-size:4rem;
+  letter-spacing:2px;
 }
 
-button {
-  margin-top:32px;
-  padding:14px 32px;
+h1 span{
+  color:#ff2f2f;
+}
+
+button{
+  margin-top:30px;
+  padding:14px 38px;
   border-radius:999px;
-  border:1px solid var(--accent);
+  border:1px solid #ff2f2f;
   background:transparent;
-  color:var(--accent);
-  font-size:0.95rem;
+  color:#ff2f2f;
+  font-size:1rem;
   cursor:pointer;
   transition:0.25s;
 }
 
-button:hover {
-  background:var(--accent);
+button:hover{
+  background:#ff2f2f;
   color:#000;
 }
 
-.socials {
-  margin-top:50px;
+.socials{
+  margin-top:35px;
   display:flex;
   flex-direction:column;
-  gap:14px;
-  font-size:1.05rem;
+  gap:12px;
+  font-size:1.1rem;
 }
 
-.socials a {
+.socials a{
   text-decoration:none;
-  color:var(--muted);
+  color:#888;
   transition:0.25s;
 }
 
-.socials a span {
-  color:var(--accent);
+.socials a span{
+  color:#ff2f2f;
 }
 
-.socials a:hover {
-  color:var(--text);
-}
-
-.player {
-  position:fixed;
-  bottom:18px;
-  right:18px;
-  font-size:0.8rem;
-  opacity:0.45;
-  display:none;
-}
-
-.player span {
-  color:var(--accent);
+.socials a:hover{
+  color:#fff;
 }
 </style>
 </head>
 
 <body>
 
-<audio id="music" loop>
+<audio id="music" playsinline>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<div class="player" id="player">
-  now playing <span>music</span>
+<div id="enter" class="screen">
+  <button onclick="enterSite()">enter</button>
 </div>
 
-<div class="container">
+<div id="content" class="screen hidden">
   <h1>Sean<span>.</span></h1>
-
-  <button onclick="startMusic()">enter</button>
 
   <div class="socials">
     <a href="https://instagram.com/pycle.xyz" target="_blank">
@@ -125,12 +110,16 @@ button:hover {
 </div>
 
 <script>
-function startMusic(){
-  const a=document.getElementById("music");
-  const p=document.getElementById("player");
-  a.volume=0.35;
-  a.play();
-  p.style.display="block";
+function enterSite(){
+  const audio = document.getElementById("music");
+  audio.muted = true;
+  audio.play().then(()=>{
+    audio.muted = false;
+    audio.volume = 0.4;
+  });
+
+  document.getElementById("enter").classList.add("hidden");
+  document.getElementById("content").classList.remove("hidden");
 }
 </script>
 
