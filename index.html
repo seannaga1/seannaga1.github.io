@@ -68,8 +68,33 @@ h1 span{
   opacity:.75;
 }
 
+/* DISCORD CARD */
+.discord-card{
+  margin-top:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  opacity:.9;
+}
+
+.discord-card img{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+}
+
+.dc-name{
+  font-size:14px;
+}
+
+.dc-status{
+  font-size:12px;
+  color:#ff2f2f;
+}
+
 .socials{
-  margin-top:24px;
+  margin-top:22px;
   display:flex;
   flex-direction:column;
   gap:10px;
@@ -91,7 +116,7 @@ h1 span{
 
 /* PLAYER */
 .player{
-  margin-top:32px;
+  margin-top:30px;
   width:360px;
   background:rgba(28,28,30,.9);
   backdrop-filter:blur(10px);
@@ -159,7 +184,6 @@ h1 span{
   border-radius:50%;
 }
 
-/* VISUALIZER */
 canvas{
   margin-top:16px;
   width:360px;
@@ -180,6 +204,14 @@ canvas{
   <div class="main">
     <h1>Sean<span>.</span></h1>
     <div id="statusEmoji">▶️</div>
+
+    <div id="discord" class="discord-card">
+      <img id="dcAvatar">
+      <div>
+        <div class="dc-name" id="dcName">loading…</div>
+        <div class="dc-status" id="dcStatus"></div>
+      </div>
+    </div>
 
     <div class="socials">
       <a href="https://instagram.com/pycle.xyz">instagram <span>@pycle.xyz</span></a>
@@ -222,7 +254,6 @@ const muteBtn = document.getElementById("muteBtn");
 const canvas = document.getElementById("viz");
 const c = canvas.getContext("2d");
 
-/* WEB AUDIO */
 const AC = window.AudioContext || window.webkitAudioContext;
 const ctx = new AC();
 const source = ctx.createMediaElementSource(audio);
@@ -233,7 +264,6 @@ source.connect(gain).connect(analyser).connect(ctx.destination);
 analyser.fftSize = 256;
 const data = new Uint8Array(analyser.frequencyBinCount);
 
-/* ENTER */
 enterScreen.onclick = async () => {
   await ctx.resume();
   gain.gain.value = 0.45;
@@ -244,9 +274,9 @@ enterScreen.onclick = async () => {
   content.classList.remove("hidden");
   updateStatus();
   draw();
+  loadDiscord();
 };
 
-/* PLAYER LOGIC */
 audio.onloadedmetadata = () => timeline.max = audio.duration;
 
 audio.ontimeupdate = () => {
@@ -255,9 +285,7 @@ audio.ontimeupdate = () => {
   left.textContent = "-" + fmt(audio.duration - audio.currentTime);
 };
 
-audio.onended = () => {
-  statusEmoji.textContent = "▶️";
-};
+audio.onended = () => statusEmoji.textContent = "▶️";
 
 timeline.oninput = () => audio.currentTime = timeline.value;
 
@@ -267,11 +295,7 @@ vol.oninput = () => {
 };
 
 function togglePlay(){
-  if(audio.paused){
-    audio.play();
-  }else{
-    audio.pause();
-  }
+  audio.paused ? audio.play() : audio.pause();
   updateStatus();
 }
 
@@ -286,11 +310,8 @@ function toggleMute(){
   updateStatus();
 }
 
-function skip(s){
-  audio.currentTime += s;
-}
+function skip(s){ audio.currentTime += s; }
 
-/* STATUS EMOJI LOGIC (CORE RULE) */
 function updateStatus(){
   if(audio.ended || audio.currentTime === 0 && audio.paused){
     statusEmoji.textContent = "▶️";
@@ -303,7 +324,6 @@ function updateStatus(){
   }
 }
 
-/* VISUALIZER */
 function draw(){
   requestAnimationFrame(draw);
   analyser.getByteFrequencyData(data);
@@ -322,6 +342,26 @@ function fmt(t){
   const s = Math.floor(t%60).toString().padStart(2,"0");
   return `${m}:${s}`;
 }
+
+/* DISCORD */
+async function loadDiscord(){
+  const res = await fetch("https://api.lanyard.rest/v1/users/1259565154891468850");
+  const d = (await res.json()).data;
+
+  dcAvatar.src = `https://cdn.discordapp.com/avatars/${d.discord_user.id}/${d.discord_user.avatar}.png`;
+  dcName.textContent = d.discord_user.username;
+
+  const map = {
+    online:"🟢 online",
+    idle:"🌙 idle",
+    dnd:"⛔ dnd",
+    offline:"⚫ offline"
+  };
+
+  dcStatus.textContent = map[d.discord_status];
+}
+
+setInterval(loadDiscord,15000);
 </script>
 
 </body>
