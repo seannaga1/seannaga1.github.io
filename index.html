@@ -68,7 +68,7 @@ h1 span{
   opacity:.75;
 }
 
-/* DISCORD CARD */
+/* DISCORD */
 .discord-card{
   margin-top:10px;
   display:flex;
@@ -91,8 +91,10 @@ h1 span{
 .dc-status{
   font-size:12px;
   color:#ff2f2f;
+  text-shadow:0 0 10px rgba(255,47,47,.5);
 }
 
+/* SOCIALS */
 .socials{
   margin-top:22px;
   display:flex;
@@ -205,7 +207,8 @@ canvas{
     <h1>Sean<span>.</span></h1>
     <div id="statusEmoji">▶️</div>
 
-    <div id="discord" class="discord-card">
+    <!-- DISCORD -->
+    <div class="discord-card">
       <img id="dcAvatar">
       <div>
         <div class="dc-name" id="dcName">loading…</div>
@@ -219,6 +222,7 @@ canvas{
       <a href="https://github.com/SeAn0032">github <span>SeAn0032</span></a>
     </div>
 
+    <!-- PLAYER -->
     <div class="player">
       <input type="range" id="timeline" class="timeline" value="0">
       <div class="times">
@@ -253,6 +257,10 @@ const vol = document.getElementById("vol");
 const muteBtn = document.getElementById("muteBtn");
 const canvas = document.getElementById("viz");
 const c = canvas.getContext("2d");
+
+const dcAvatar = document.getElementById("dcAvatar");
+const dcName = document.getElementById("dcName");
+const dcStatus = document.getElementById("dcStatus");
 
 const AC = window.AudioContext || window.webkitAudioContext;
 const ctx = new AC();
@@ -348,17 +356,19 @@ async function loadDiscord(){
   const res = await fetch("https://api.lanyard.rest/v1/users/1259565154891468850");
   const d = (await res.json()).data;
 
-  dcAvatar.src = `https://cdn.discordapp.com/avatars/${d.discord_user.id}/${d.discord_user.avatar}.png`;
+  dcAvatar.src =
+    `https://cdn.discordapp.com/avatars/${d.discord_user.id}/${d.discord_user.avatar}.png`;
+
   dcName.textContent = d.discord_user.username;
 
   const map = {
-    online:"🟢 online",
-    idle:"🌙 idle",
-    dnd:"⛔ dnd",
-    offline:"⚫ offline"
+    online: "online",
+    idle: "idle",
+    dnd: "do not disturb",
+    offline: "last online"
   };
 
-  dcStatus.textContent = map[d.discord_status];
+  dcStatus.textContent = map[d.discord_status] || "last online";
 }
 
 setInterval(loadDiscord,15000);
